@@ -1,60 +1,220 @@
-## Python standby template
+## What does PrismCrawl Google Search API do?
 
-<!-- This is an Apify template readme -->
+**PrismCrawl Google Search API** runs **live Google searches** through the [PrismCrawl API](https://www.prismcrawl.com/) and saves the **normalized JSON response** to an Apify dataset: ranked results, **SERP features** (featured snippets, People also ask, knowledge panels, news, shopping, local results, AI summaries, and more when Google shows them), and **pagination metadata**.
 
-Start a new [web scraping](https://apify.com/web-scraping) project quickly and easily in Python with our Standby project template. It provides a basic structure for the [Actor](https://apify.com/actors) with [Apify SDK](https://docs.apify.com/sdk/python/) and allows you to easily add your own functionality.
+This Actor is a thin integration between Apify and PrismCrawl. It does not scrape Google itself: every search is executed by PrismCrawl's [Google Search endpoint](https://www.prismcrawl.com/docs), and the Actor passes your parameters through and stores what PrismCrawl returns. PrismCrawl searches are **live and uncached**: each successful request runs against Google, and PrismCrawl does not serve a cached keyword database.
 
-## Included features
+Running it on Apify adds scheduling, API access, webhooks and integrations, run monitoring, and dataset exports on top of PrismCrawl.
 
-- **[Apify SDK](https://docs.apify.com/sdk/python/)** for Python - a toolkit for building Apify [Actors](https://apify.com/actors) and scrapers in Python
+- 🌐 PrismCrawl website: [www.prismcrawl.com](https://www.prismcrawl.com/)
+- 📖 Full API reference: [www.prismcrawl.com/docs](https://www.prismcrawl.com/docs)
 
-## Resources
+## Why use PrismCrawl Google Search API?
 
-- [Actor Standby documentation](https://docs.apify.com/platform/actors/development/programming-interface/standby)
+- **Rank tracking and SERP monitoring**: schedule the same keyword with fixed location, language, and device, and compare positions over time.
+- **SEO and competitor research**: see which pages rank and which SERP features appear for a keyword set.
+- **Local and international search**: search as if from a country, a named city, or exact coordinates, on any supported Google domain, in any supported interface language.
+- **AI agents and research tools**: give an agent current search results with titles, snippets, and source URLs. The Actor also supports Apify's Standby mode for low-latency HTTP calls.
+- **No infrastructure**: PrismCrawl handles retrieval and parsing, so you don't run browsers, proxies, or parsers.
 
+## You need a PrismCrawl API key
 
-## Getting started
+This Actor uses **your own PrismCrawl account**. To get a key:
 
-For complete information [see this article](https://docs.apify.com/platform/actors/development#build-actor-at-apify-console). In short, you will:
+1. Create a free account at [prismcrawl.com](https://www.prismcrawl.com/auth). New accounts get **100 free credits** and don't need a credit card.
+2. Copy your API key from the PrismCrawl dashboard.
+3. Paste it into the **PrismCrawl API key** field of this Actor.
 
-1. Build the Actor
-2. Run the Actor
+The key field is a **secret input**: Apify stores it encrypted, and the Actor never logs it or writes it to the dataset. It is only sent to `api.prismcrawl.com` in the `x-api-key` header.
 
-## Pull the Actor for local development
+## How much does it cost to search Google with PrismCrawl?
 
-If you would like to develop locally, you can pull the existing Actor from Apify console using Apify CLI:
+There are two separate costs:
 
-1. Install `apify-cli`
+- **PrismCrawl credits** (billed by PrismCrawl to your PrismCrawl account). **Each successful search costs one credit**, including a completed search that returns no results. Each additional results page is a separate search. **Failed searches are free**: invalid requests, authentication errors, rate limits, and server errors don't use credits. PrismCrawl sells prepaid credit packages with no subscription. See [PrismCrawl pricing](https://www.prismcrawl.com/serp-api/pricing) for current packages and rates.
+- **Apify platform usage** (billed by Apify) for the Actor's compute time. The Actor only makes HTTP calls, so a run is short and uses very little memory.
 
-    **Using Homebrew**
+With **Maximum result pages** set to 1 (the default), one run uses at most one PrismCrawl credit.
 
-    ```bash
-    brew install apify-cli
-    ```
+## How to use PrismCrawl Google Search API
 
-    **Using NPM**
+1. Open the Actor's **Input** tab.
+2. Paste your **PrismCrawl API key**.
+3. Enter a **Search query**, for example `best coffee shops in Baltimore`.
+4. Optionally set a country, language, location, device, search tab, or time filter.
+5. Click **Start**. When the run finishes, open the **Output** tab to see the results, SERP features, or full PrismCrawl responses.
 
-    ```bash
-    npm -g install apify-cli
-    ```
+You can also start the Actor through the [Apify API](https://docs.apify.com/api/v2), schedule it, or connect it to webhooks and integrations.
 
-2. Pull the Actor by its unique `<ActorId>`, which is one of the following:
-    - unique name of the Actor to pull (e.g. "apify/hello-world")
-    - or ID of the Actor to pull (e.g. "E2jjCZBezvAZnX8Rb")
+## Input
 
-    You can find both by clicking on the Actor title at the top of the page, which will open a modal containing both Actor unique name and Actor ID.
+All fields other than the API key and query are optional. Parameter names in parentheses are the PrismCrawl API names, so you can look each one up in the [PrismCrawl API reference](https://www.prismcrawl.com/docs).
 
-    This command will copy the Actor into the current directory on your local machine.
+| Field | PrismCrawl parameter | What it does |
+| --- | --- | --- |
+| PrismCrawl API key | `x-api-key` header | Your secret PrismCrawl key. Required. |
+| Search query | `query` | The Google search. Required, up to 8,192 UTF-8 bytes. |
+| Maximum result pages | – | Pages to fetch (1–10, default 1). The Actor stops early when there is no next page. Each page uses one credit. |
+| Start offset | `start` | Zero-based result offset for the first page. |
+| Country | `gl` | Two-letter result country (default `us`). Boosts results from that country. |
+| Interface language | `hl` | Google interface language (default `en-US`). |
+| Google domain | `google_domain` | For example `google.co.uk` (default `google.com`). |
+| Location | `location` | A named place such as `Baltimore,Maryland,United States` ([Google geo-target](https://developers.google.com/google-ads/api/data/geotargets) Canonical Name). |
+| Latitude / Longitude | `coordinates` | Search from exact coordinates. |
+| Radius | `radius` | Meters around the coordinates (1–199 for desktop, up to 1,000 for mobile or tablet). |
+| Device | `device` | `desktop`, `mobile`, or `tablet`. |
+| Search vertical | `tbm` | News, Videos, Images, Shopping, Local, or Books. |
+| Search tab | `udm` | Local, Images, Forums, Videos, News, Web, Shopping, Books, or AI Mode. |
+| Time and advanced filters | `tbs` | For example `qdr:d` (past day), `qdr:w` (past week), or `cdr:1,cd_min:8/1/2026,cd_max:8/12/2026`. |
+| SafeSearch | `safe` | `active` or `off`. |
+| Restrict to languages / countries | `lr` / `cr` | For example `lang_fr\|lang_de` or `countryUS\|countryCA`. |
+| Encoded location | `uule` | A raw Google-encoded location, for advanced users. |
+| Spelling correction, duplicate filtering, personalization | `nfpr`, `filter`, `pws` | Google's native 0/1 controls. |
+| Zero trace | `zero_trace` | PrismCrawl won't store the source HTML or parsed JSON; only audit and billing metadata is kept. |
 
-    ```bash
-    apify pull <ActorId>
-    ```
+Some fields can't be combined. Use only one of location, coordinates, or UULE. Radius requires coordinates. Use either a search vertical or a search tab, not both. The Actor checks these rules before sending anything, so an invalid combination fails immediately and costs nothing.
 
-## Documentation reference
+### Example input
 
-To learn more about Apify and Actors, take a look at the following resources:
+```json
+{
+    "prismcrawlApiKey": "<YOUR_PRISMCRAWL_API_KEY>",
+    "query": "best coffee shops in Baltimore",
+    "gl": "us",
+    "hl": "en-US",
+    "location": "Baltimore,Maryland,United States",
+    "device": "mobile",
+    "maxPages": 2
+}
+```
 
-- [Apify SDK for JavaScript documentation](https://docs.apify.com/sdk/js)
-- [Apify SDK for Python documentation](https://docs.apify.com/sdk/python)
-- [Apify Platform documentation](https://docs.apify.com/platform)
-- [Join our developer community on Discord](https://discord.com/invite/jyEM2PRvMU)
+## Output
+
+The Actor stores **one dataset item per results page**. Each item is the **PrismCrawl response exactly as returned**, plus two fields added by the Actor:
+
+- `page`: the page number within this run (1, 2, …)
+- `credits_remaining`: your remaining PrismCrawl credits, from the `X-Credits-Remaining` response header
+
+The **Output** tab has three views of the same data:
+
+- **Search results**: one row per ranked result (rank, type, title, URL, snippet, domain, source)
+- **SERP features**: one row per feature (type, title, text, items, links)
+- **Pages**: one row per PrismCrawl request with the complete response
+
+You can download the dataset in various formats such as JSON, HTML, CSV, or Excel.
+
+### Example output item
+
+Shortened; live values vary.
+
+```json
+{
+    "page": 1,
+    "credits_remaining": 99,
+    "success": true,
+    "request_id": "66ca8deb-1dc2-4017-865f-c4fb0e3c7c0d",
+    "data": {
+        "format": "json",
+        "content": {
+            "search_parameters": {
+                "q": "best espresso machines",
+                "type": "search",
+                "engine": "google",
+                "device": null,
+                "google_domain": "google.com",
+                "gl": "us",
+                "hl": "en-US",
+                "location": null,
+                "tbs": null,
+                "tbm": null,
+                "udm": null
+            },
+            "has_next_page": true,
+            "results": [
+                {
+                    "id": "s_972c538a8734a8b7",
+                    "rank": 1,
+                    "type": "organic",
+                    "title": "The 14 Best Espresso Machines, Tested & Reviewed",
+                    "url": "https://www.seriouseats.com/best-espresso-machines-5185482",
+                    "display_url": "seriouseats.com › best-espresso-machines-5185482",
+                    "snippet": "Our favorite espresso machine is the Breville Bambino Plus.",
+                    "domain": "seriouseats.com",
+                    "favicon": "https://seriouseats.com/favicon.ico",
+                    "source_name": "Serious Eats",
+                    "position": { "absolute": 1 },
+                    "engine": "google",
+                    "domain_info": { "tld": "com", "sld": "seriouseats", "category": null },
+                    "classification": null
+                }
+            ],
+            "serp_features": [
+                {
+                    "id": "f_5236e4e73b2337d4",
+                    "engine": "google",
+                    "type": "people_also_ask",
+                    "title": "People also ask",
+                    "text": null,
+                    "items": [
+                        { "title": "Which espresso machine brand is most reliable?", "text": "Which espresso machine brand is most reliable?", "link": null }
+                    ],
+                    "links": [],
+                    "source_result_ids": ["s_972c538a8734a8b7"],
+                    "position": { "absolute": 1 },
+                    "confidence": 0.8,
+                    "extracted_at": "2026-07-01T16:45:24Z"
+                }
+            ]
+        }
+    }
+}
+```
+
+### Main data fields
+
+| Field | Description |
+| --- | --- |
+| `request_id` | PrismCrawl request ID. Use it to find the request in your PrismCrawl request history or when contacting support. |
+| `data.content.search_parameters` | The parameters PrismCrawl used for the search. |
+| `data.content.results[]` | Ranked results: `rank`, `type` (e.g. `organic`, `ad`, `news`, `shopping`), `title`, `url`, `display_url`, `snippet`, `domain`, `source_name`, `position`, `domain_info`. |
+| `data.content.serp_features[]` | SERP features: `type` (e.g. `featured_snippet`, `people_also_ask`, `knowledge_panel`, `ai_summary`), `title`, `text`, `items`, `links`, `source_result_ids`, `confidence`. |
+| `data.content.has_next_page` | Whether Google shows another results page. |
+
+The full, authoritative schema is in the [PrismCrawl API reference](https://www.prismcrawl.com/docs).
+
+## Tips and advanced options
+
+- **Control cost with Maximum result pages.** Each page is one credit. Start with 1 page and increase only if you need deeper results.
+- **Keep targeting fixed for rank tracking.** Compare runs that use the same country, language, location, and device.
+- **Use a time filter for fresh results**, for example `qdr:d` for the past day, or pick the News vertical (`tbm`) or tab (`udm`).
+- **Use Zero trace for sensitive queries.** PrismCrawl then keeps only audit and billing metadata. Results still appear in your Apify dataset.
+- **Standby (HTTP) mode.** For low-latency calls from your own code, use the Actor's Standby URL: `POST /` with the same JSON fields as the input (without `prismcrawlApiKey` and `maxPages`), and send your PrismCrawl key in the `x-prismcrawl-api-key` header. The response is the PrismCrawl response body and status code, unchanged. Each call fetches one page.
+- **Source HTML** (`html`, `rewrite_links`), pre-encoded queries (`query_encoded`), and `color_scheme` are PrismCrawl parameters that this Actor doesn't expose, because they don't change the normalized results. Use the [PrismCrawl API](https://www.prismcrawl.com/docs) directly if you need them.
+
+## Errors and retries
+
+The Actor reports PrismCrawl errors in the run's status message and log, including the PrismCrawl **request ID**:
+
+| HTTP status | Meaning | Retried? |
+| --- | --- | --- |
+| 400 | Invalid request parameters | No |
+| 401 | Missing, invalid, expired, or revoked API key | No |
+| 402 | No PrismCrawl credits remaining | No |
+| 429 | Rate limit exceeded | Yes, up to 3 times, waiting until the reported reset time (max 60 s) |
+| 5xx | PrismCrawl could not complete the request | Yes, up to 3 times with exponential backoff |
+
+Connection failures that never reached PrismCrawl (DNS errors, refused connections) are also retried. Retries only happen for failed requests, which PrismCrawl doesn't charge for, so a retry doesn't cause a duplicate charge. If a request times out, the Actor does **not** retry, because the search may have completed on PrismCrawl's side. Check your PrismCrawl request history before running again. If an error happens after some pages were saved, the run fails but the saved pages stay in the dataset.
+
+## FAQ, disclaimers, and support
+
+**Is this an independent Google scraper?** No. All searches are performed by the PrismCrawl API under your PrismCrawl account and subject to [PrismCrawl's terms](https://www.prismcrawl.com/terms). This Actor forwards your parameters and stores the response.
+
+**Are results cached?** No. PrismCrawl runs a live search for every successful request.
+
+**Which SERP features will I get?** It depends on the query, market, and device. Features appear only when Google shows them and PrismCrawl recognizes them.
+
+**Where can I learn more?** The [PrismCrawl API documentation](https://www.prismcrawl.com/docs) covers every parameter and response field. PrismCrawl also offers other endpoints (Bing, DuckDuckGo, Google Maps, Google Shopping, Amazon, app stores, and reviews) at [prismcrawl.com](https://www.prismcrawl.com/).
+
+**Support.** For problems with this Actor, open an issue in the **Issues** tab. For account, credit, or API questions, contact PrismCrawl at support@prismcrawl.com and include the request ID.
+
+Make sure your use of search data complies with applicable laws and the terms of the services involved.

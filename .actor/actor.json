@@ -1,15 +1,15 @@
 {
     "$schema": "https://apify.com/schemas/v1/actor.ide.json",
     "actorSpecification": 1,
-    "name": "python-standby",
-    "title": "Actor Standby Python project",
-    "description": "Actor Standby project in Python.",
-    "version": "0.0",
+    "name": "prismcrawl-google-search-api",
+    "title": "PrismCrawl Google Search API",
+    "description": "Run live Google searches through the PrismCrawl API and receive normalized search results, SERP features, and pagination metadata.",
+    "version": "0.1",
     "buildTag": "latest",
     "usesStandbyMode": true,
     "meta": {
         "templateId": "python-standby",
-        "generatedBy": "<FILL-IN-MODEL>"
+        "generatedBy": "Claude Code with Claude Opus 5.5"
     },
     "inputSchema": "./input_schema.json",
     "outputSchema": "./output_schema.json",
