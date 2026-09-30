@@ -1,0 +1,17 @@
+{
+    "$schema": "https://apify.com/schemas/v1/output.ide.json",
+    "actorOutputSchemaVersion": 1,
+    "title": "PrismCrawl Yelp API output",
+    "properties": {
+        "results": {
+            "type": "string",
+            "title": "Businesses",
+            "template": "{{links.apiDefaultDatasetUrl}}/items?view=businesses"
+        },
+        "responses": {
+            "type": "string",
+            "title": "Full PrismCrawl responses",
+            "template": "{{links.apiDefaultDatasetUrl}}/items"
+        }
+    }
+}

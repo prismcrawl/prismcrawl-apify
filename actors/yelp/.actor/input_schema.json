@@ -1,0 +1,145 @@
+{
+    "$schema": "https://apify.com/schemas/v1/input.ide.json",
+    "title": "PrismCrawl Yelp API input",
+    "description": "Look up Yelp businesses by keyword and location, and collect complete Yelp reviews, through the PrismCrawl API as structured JSON. You need a PrismCrawl API key; each successful request uses one PrismCrawl credit, and failed requests are free.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "prismcrawlApiKey": {
+            "title": "PrismCrawl API key",
+            "type": "string",
+            "editor": "textfield",
+            "isSecret": true,
+            "description": "Your PrismCrawl API key, sent to PrismCrawl as the <code>x-api-key</code> header. Create or rotate it in the <a href=\"https://www.prismcrawl.com/\" target=\"_blank\">PrismCrawl dashboard</a>; new accounts get 100 free credits. The key is stored encrypted by Apify and is never logged or written to the dataset."
+        },
+        "mode": {
+            "title": "What to fetch",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "search",
+                "reviews"
+            ],
+            "enumTitles": [
+                "Business lookup",
+                "Business reviews"
+            ],
+            "description": "Look up businesses by keyword and location, or fetch the reviews of one business.",
+            "default": "search"
+        },
+        "query": {
+            "title": "Search query",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For business lookup: what to search for, such as <code>restaurants</code>.",
+            "prefill": "restaurants"
+        },
+        "location": {
+            "title": "Location",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For business lookup: where to search, such as <code>Austin, TX</code>. Use either a location or coordinates.",
+            "prefill": "Austin, TX"
+        },
+        "latitude": {
+            "title": "Latitude",
+            "type": "number",
+            "editor": "number",
+            "description": "For business lookup: latitude to search around, instead of a location. Set together with longitude.",
+            "minimum": -90,
+            "maximum": 90
+        },
+        "longitude": {
+            "title": "Longitude",
+            "type": "number",
+            "editor": "number",
+            "description": "Longitude, for example <code>-76.6122</code>. Set together with latitude.",
+            "minimum": -180,
+            "maximum": 180
+        },
+        "id": {
+            "title": "Business alias",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For reviews: the business alias from its Yelp URL, such as <code>halcyon-austin-2</code>."
+        },
+        "sort_by": {
+            "title": "Review order",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "recommended",
+                "newest",
+                "oldest",
+                "highest_rating",
+                "lowest_rating"
+            ],
+            "enumTitles": [
+                "Recommended",
+                "Newest",
+                "Oldest",
+                "Highest rating",
+                "Lowest rating"
+            ],
+            "description": "For reviews: the order to return them in."
+        },
+        "maxPages": {
+            "title": "Maximum pages",
+            "type": "integer",
+            "editor": "number",
+            "description": "How many pages to fetch (one page of businesses or reviews each). The Actor stops early when PrismCrawl reports there is no next page. <strong>Each page is a separate PrismCrawl request and uses one credit.</strong>",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 1
+        },
+        "page": {
+            "title": "First page",
+            "type": "integer",
+            "editor": "number",
+            "description": "One-based page to start from. Business lookup covers the first 200 businesses.",
+            "minimum": 1,
+            "maximum": 1000
+        },
+        "limit": {
+            "title": "Items per page",
+            "type": "integer",
+            "editor": "number",
+            "description": "Businesses or reviews per page (1–100). Business lookup defaults to 20.",
+            "minimum": 1,
+            "maximum": 100
+        },
+        "language": {
+            "sectionCaption": "Localization",
+            "title": "Language",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Language code supported by the provider, such as <code>en</code>."
+        },
+        "device": {
+            "title": "Device",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "desktop",
+                "mobile",
+                "tablet"
+            ],
+            "enumTitles": [
+                "Desktop",
+                "Mobile",
+                "Tablet"
+            ],
+            "description": "Device presentation used for the source request. Leave empty for the default."
+        },
+        "zero_trace": {
+            "sectionCaption": "Privacy",
+            "title": "Zero trace",
+            "type": "boolean",
+            "default": false,
+            "description": "When enabled, PrismCrawl does not store the source or parsed response for these requests; only audit and billing metadata is kept. Results still appear in this Actor's dataset."
+        }
+    },
+    "required": [
+        "prismcrawlApiKey"
+    ]
+}

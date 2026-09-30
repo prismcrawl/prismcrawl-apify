@@ -1,0 +1,56 @@
+{
+    "$schema": "https://apify.com/schemas/v1/input.ide.json",
+    "title": "PrismCrawl Google Shopping Product API input",
+    "description": "Look up a Google Shopping product through the PrismCrawl API: current details, merchant offers, images, specifications, and ratings as structured JSON. You need a PrismCrawl API key; each successful request uses one PrismCrawl credit, and failed requests are free.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "prismcrawlApiKey": {
+            "title": "PrismCrawl API key",
+            "type": "string",
+            "editor": "textfield",
+            "isSecret": true,
+            "description": "Your PrismCrawl API key, sent to PrismCrawl as the <code>x-api-key</code> header. Create or rotate it in the <a href=\"https://www.prismcrawl.com/\" target=\"_blank\">PrismCrawl dashboard</a>; new accounts get 100 free credits. The key is stored encrypted by Apify and is never logged or written to the dataset."
+        },
+        "id": {
+            "title": "Product ID",
+            "type": "string",
+            "editor": "textfield",
+            "description": "The <code>product_id</code> from a Google Shopping result, for example from the PrismCrawl Google Search API Actor with the Shopping vertical.",
+            "prefill": "17755277695162489284"
+        },
+        "query": {
+            "title": "Original Shopping query",
+            "type": "string",
+            "editor": "textfield",
+            "description": "The Google Shopping query that returned this product ID. Google uses it to supply current product details.",
+            "prefill": "sony wh-1000xm5"
+        },
+        "country": {
+            "sectionCaption": "Localization",
+            "title": "Country",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Two-letter country or storefront code, such as <code>us</code> or <code>gb</code>.",
+            "pattern": "^[A-Za-z]{2}$"
+        },
+        "language": {
+            "title": "Language",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Language code supported by the provider, such as <code>en</code>."
+        },
+        "zero_trace": {
+            "sectionCaption": "Privacy",
+            "title": "Zero trace",
+            "type": "boolean",
+            "default": false,
+            "description": "When enabled, PrismCrawl does not store the source or parsed response for these requests; only audit and billing metadata is kept. Results still appear in this Actor's dataset."
+        }
+    },
+    "required": [
+        "prismcrawlApiKey",
+        "id",
+        "query"
+    ]
+}

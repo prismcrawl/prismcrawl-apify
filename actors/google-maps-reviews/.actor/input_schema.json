@@ -1,0 +1,96 @@
+{
+    "$schema": "https://apify.com/schemas/v1/input.ide.json",
+    "title": "PrismCrawl Google Maps Reviews API input",
+    "description": "Get full Google Maps reviews for any place, or all reviews written by a Google contributor, through the PrismCrawl API as structured JSON. You need a PrismCrawl API key; each successful request uses one PrismCrawl credit, and failed requests are free.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "prismcrawlApiKey": {
+            "title": "PrismCrawl API key",
+            "type": "string",
+            "editor": "textfield",
+            "isSecret": true,
+            "description": "Your PrismCrawl API key, sent to PrismCrawl as the <code>x-api-key</code> header. Create or rotate it in the <a href=\"https://www.prismcrawl.com/\" target=\"_blank\">PrismCrawl dashboard</a>; new accounts get 100 free credits. The key is stored encrypted by Apify and is never logged or written to the dataset."
+        },
+        "mode": {
+            "title": "What to fetch",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "place",
+                "contributor"
+            ],
+            "enumTitles": [
+                "Reviews of a place",
+                "Reviews by a contributor"
+            ],
+            "description": "Fetch the reviews of one place (in relevance order), or the reviews written by one Google Maps contributor (newest first, covering their first 200 reviews).",
+            "default": "place"
+        },
+        "id": {
+            "title": "Place ID or contributor ID",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For a place, the <code>place_id</code> from Google Maps search results (for example from the PrismCrawl Google Maps Places Actor), not the <code>data_id</code>. For a contributor, the numeric ID in their Google Maps contributor profile URL.",
+            "prefill": "ChIJaXQRs6lZwokRY6EFpJnhNNE"
+        },
+        "maxPages": {
+            "title": "Maximum pages",
+            "type": "integer",
+            "editor": "number",
+            "description": "How many pages to fetch (one page of reviews each). The Actor stops early when PrismCrawl reports there is no next page. <strong>Each page is a separate PrismCrawl request and uses one credit.</strong>",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 1
+        },
+        "limit": {
+            "title": "Reviews per page",
+            "type": "integer",
+            "editor": "number",
+            "description": "Maximum reviews per page: up to 10 for a place, up to 50 for a contributor. Google may return fewer.",
+            "minimum": 1,
+            "maximum": 50
+        },
+        "country": {
+            "sectionCaption": "Localization",
+            "title": "Country",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Two-letter country or storefront code, such as <code>us</code> or <code>gb</code>.",
+            "pattern": "^[A-Za-z]{2}$"
+        },
+        "language": {
+            "title": "Language",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Language code supported by the provider, such as <code>en</code>."
+        },
+        "device": {
+            "title": "Device",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "desktop",
+                "mobile",
+                "tablet"
+            ],
+            "enumTitles": [
+                "Desktop",
+                "Mobile",
+                "Tablet"
+            ],
+            "description": "Device presentation used for the source request. Leave empty for the default."
+        },
+        "zero_trace": {
+            "sectionCaption": "Privacy",
+            "title": "Zero trace",
+            "type": "boolean",
+            "default": false,
+            "description": "When enabled, PrismCrawl does not store the source or parsed response for these requests; only audit and billing metadata is kept. Results still appear in this Actor's dataset."
+        }
+    },
+    "required": [
+        "prismcrawlApiKey",
+        "id"
+    ]
+}

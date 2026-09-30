@@ -1,0 +1,156 @@
+{
+    "$schema": "https://apify.com/schemas/v1/dataset.ide.json",
+    "actorSpecification": 1,
+    "fields": {
+        "type": "object",
+        "description": "One item per PrismCrawl page: the PrismCrawl response body unchanged, plus the Actor's page number and the X-Credits-Remaining header value.",
+        "required": [
+            "page",
+            "success",
+            "request_id",
+            "data"
+        ],
+        "properties": {
+            "page": {
+                "type": "integer",
+                "description": "1-based page number within this run."
+            },
+            "credits_remaining": {
+                "type": [
+                    "integer",
+                    "null"
+                ],
+                "description": "PrismCrawl credits remaining after this request (X-Credits-Remaining header), or null if not returned."
+            },
+            "success": {
+                "type": "boolean"
+            },
+            "request_id": {
+                "type": "string",
+                "description": "PrismCrawl request ID. Include it when contacting PrismCrawl support."
+            },
+            "data": {
+                "type": "object",
+                "description": "PrismCrawl response data: format and content (search_parameters, results, has_next_page, and endpoint-specific fields)."
+            }
+        }
+    },
+    "views": {
+        "product": {
+            "title": "Product",
+            "description": "Product details.",
+            "transformation": {
+                "unwind": [
+                    "data",
+                    "content",
+                    "results"
+                ],
+                "fields": [
+                    "page",
+                    "thumbnail",
+                    "title",
+                    "brand",
+                    "rating",
+                    "rating_count",
+                    "description",
+                    "offers",
+                    "specifications",
+                    "product_id",
+                    "url",
+                    "request_id"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "page": {
+                        "label": "Page",
+                        "format": "number"
+                    },
+                    "thumbnail": {
+                        "label": "Image",
+                        "format": "image"
+                    },
+                    "title": {
+                        "label": "Title",
+                        "format": "text"
+                    },
+                    "brand": {
+                        "label": "Brand",
+                        "format": "text"
+                    },
+                    "rating": {
+                        "label": "Rating",
+                        "format": "number"
+                    },
+                    "rating_count": {
+                        "label": "Ratings",
+                        "format": "number"
+                    },
+                    "description": {
+                        "label": "Description",
+                        "format": "text"
+                    },
+                    "offers": {
+                        "label": "Offers",
+                        "format": "array"
+                    },
+                    "specifications": {
+                        "label": "Specifications",
+                        "format": "array"
+                    },
+                    "product_id": {
+                        "label": "Product ID",
+                        "format": "text"
+                    },
+                    "url": {
+                        "label": "URL",
+                        "format": "link"
+                    },
+                    "request_id": {
+                        "label": "PrismCrawl request ID",
+                        "format": "text"
+                    }
+                }
+            }
+        },
+        "pages": {
+            "title": "Pages",
+            "description": "One row per PrismCrawl request, with the complete normalized response.",
+            "transformation": {
+                "fields": [
+                    "page",
+                    "request_id",
+                    "success",
+                    "credits_remaining",
+                    "data"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "page": {
+                        "label": "Page",
+                        "format": "number"
+                    },
+                    "request_id": {
+                        "label": "PrismCrawl request ID",
+                        "format": "text"
+                    },
+                    "success": {
+                        "label": "Success",
+                        "format": "boolean"
+                    },
+                    "credits_remaining": {
+                        "label": "Credits remaining",
+                        "format": "number"
+                    },
+                    "data": {
+                        "label": "Response data",
+                        "format": "object"
+                    }
+                }
+            }
+        }
+    }
+}

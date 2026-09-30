@@ -1,0 +1,26 @@
+# Development tool settings only; each Actor's runtime dependencies are in actors/<slug>/requirements.txt.
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["*.md", "actors/*/my_actor/main.py", "actors/*/my_actor/prismcrawl.py", "actors/*/my_actor/runtime.py", "actors/*/my_actor/standby.py", "actors/*/my_actor/__main__.py", "actors/*/my_actor/__init__.py"]  # generated copies of shared/
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "S", "PL", "RUF"]
+ignore = [
+    "PLR0912", "PLR0913", "PLR0915",  # endpoint builders map many optional fields
+    "RUF001", "RUF002",  # README and error text intentionally use typographic characters (–, ×, ›)
+    "S105", "S106",  # "next_page_token" is a PrismCrawl parameter name, not a password
+    "S603",  # tests run the generator with sys.executable
+]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*" = ["S101"]
+"tests/*" = ["S101"]
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true

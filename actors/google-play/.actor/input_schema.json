@@ -1,0 +1,150 @@
+{
+    "$schema": "https://apify.com/schemas/v1/input.ide.json",
+    "title": "PrismCrawl Google Play API input",
+    "description": "Search Google Play apps, games, books, and movies, get product details, and collect app reviews through the PrismCrawl API as structured JSON. You need a PrismCrawl API key; each successful request uses one PrismCrawl credit, and failed requests are free.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "prismcrawlApiKey": {
+            "title": "PrismCrawl API key",
+            "type": "string",
+            "editor": "textfield",
+            "isSecret": true,
+            "description": "Your PrismCrawl API key, sent to PrismCrawl as the <code>x-api-key</code> header. Create or rotate it in the <a href=\"https://www.prismcrawl.com/\" target=\"_blank\">PrismCrawl dashboard</a>; new accounts get 100 free credits. The key is stored encrypted by Apify and is never logged or written to the dataset."
+        },
+        "mode": {
+            "title": "What to fetch",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "apps",
+                "games",
+                "books",
+                "movies",
+                "product",
+                "reviews"
+            ],
+            "enumTitles": [
+                "Search apps",
+                "Search or browse games",
+                "Search books",
+                "Search movies",
+                "Product details",
+                "App reviews"
+            ],
+            "description": "Choose what to fetch. Searches use <strong>Search query</strong>; product details and reviews use <strong>Product ID</strong>.",
+            "default": "apps"
+        },
+        "query": {
+            "title": "Search query",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Text to search for (search modes). Optional for games when a games category is set.",
+            "prefill": "weather"
+        },
+        "gamesCategory": {
+            "title": "Games category",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For games: a Google Play Games category to browse, such as <code>GAME_ACTION</code> or <code>GAME_PUZZLE</code>. Combine with a query to return only games in that category."
+        },
+        "id": {
+            "title": "Product ID",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For product details and reviews: the ID from Google Play search results or the <code>id</code> parameter of the store URL, such as <code>com.google.android.apps.maps</code>. App names are not IDs.",
+            "pattern": "^[a-zA-Z0-9_.-]{1,250}$"
+        },
+        "productCategory": {
+            "title": "Product type",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "apps",
+                "books",
+                "movies",
+                "audiobooks"
+            ],
+            "enumTitles": [
+                "Apps",
+                "Books",
+                "Movies",
+                "Audiobooks"
+            ],
+            "description": "For product details: the store section of the product. Leave empty for apps."
+        },
+        "sort_by": {
+            "title": "Review order",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "newest",
+                "relevant",
+                "rating"
+            ],
+            "enumTitles": [
+                "Newest",
+                "Most relevant",
+                "Rating"
+            ],
+            "description": "For reviews: the order to return them in."
+        },
+        "maxPages": {
+            "title": "Maximum pages",
+            "type": "integer",
+            "editor": "number",
+            "description": "How many pages to fetch (searches and reviews only). The Actor stops early when PrismCrawl reports there is no next page. <strong>Each page is a separate PrismCrawl request and uses one credit.</strong>",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 1
+        },
+        "limit": {
+            "title": "Items per page",
+            "type": "integer",
+            "editor": "number",
+            "description": "Maximum results or reviews per page (1–100). Google Play may return fewer.",
+            "minimum": 1,
+            "maximum": 100
+        },
+        "country": {
+            "sectionCaption": "Localization",
+            "title": "Country",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Two-letter country or storefront code, such as <code>us</code> or <code>gb</code>.",
+            "pattern": "^[A-Za-z]{2}$"
+        },
+        "language": {
+            "title": "Language",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Language code supported by the provider, such as <code>en</code>."
+        },
+        "device": {
+            "title": "Device",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "desktop",
+                "mobile",
+                "tablet"
+            ],
+            "enumTitles": [
+                "Desktop",
+                "Mobile",
+                "Tablet"
+            ],
+            "description": "Device presentation used for the source request. Leave empty for the default."
+        },
+        "zero_trace": {
+            "sectionCaption": "Privacy",
+            "title": "Zero trace",
+            "type": "boolean",
+            "default": false,
+            "description": "When enabled, PrismCrawl does not store the source or parsed response for these requests; only audit and billing metadata is kept. Results still appear in this Actor's dataset."
+        }
+    },
+    "required": [
+        "prismcrawlApiKey"
+    ]
+}

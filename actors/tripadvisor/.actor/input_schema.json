@@ -1,0 +1,117 @@
+{
+    "$schema": "https://apify.com/schemas/v1/input.ide.json",
+    "title": "PrismCrawl Tripadvisor API input",
+    "description": "Search Tripadvisor hotels, restaurants, and attractions, get place details, and collect reviews through the PrismCrawl API as structured JSON. You need a PrismCrawl API key; each successful request uses one PrismCrawl credit, and failed requests are free.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "prismcrawlApiKey": {
+            "title": "PrismCrawl API key",
+            "type": "string",
+            "editor": "textfield",
+            "isSecret": true,
+            "description": "Your PrismCrawl API key, sent to PrismCrawl as the <code>x-api-key</code> header. Create or rotate it in the <a href=\"https://www.prismcrawl.com/\" target=\"_blank\">PrismCrawl dashboard</a>; new accounts get 100 free credits. The key is stored encrypted by Apify and is never logged or written to the dataset."
+        },
+        "mode": {
+            "title": "What to fetch",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "search",
+                "place",
+                "reviews"
+            ],
+            "enumTitles": [
+                "Search",
+                "Place details",
+                "Place reviews"
+            ],
+            "description": "Search Tripadvisor, or fetch the details or reviews of one place.",
+            "default": "search"
+        },
+        "query": {
+            "title": "Search query",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For search: what to look for, such as <code>restaurants</code> or <code>hotels</code>.",
+            "prefill": "restaurants"
+        },
+        "location": {
+            "title": "Location",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For search: where to search, such as <code>Austin, TX</code>.",
+            "prefill": "Austin, TX"
+        },
+        "id": {
+            "title": "Place URL",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For place details and reviews: the canonical Tripadvisor URL of the hotel, restaurant, or attraction, as returned by search."
+        },
+        "sort_by": {
+            "title": "Review order",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "recommended",
+                "newest"
+            ],
+            "enumTitles": [
+                "Recommended",
+                "Newest"
+            ],
+            "description": "For reviews: the order to return them in."
+        },
+        "maxPages": {
+            "title": "Maximum pages",
+            "type": "integer",
+            "editor": "number",
+            "description": "How many pages to fetch (search and reviews only). The Actor stops early when PrismCrawl reports there is no next page. <strong>Each page is a separate PrismCrawl request and uses one credit.</strong>",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 1
+        },
+        "limit": {
+            "title": "Items per page",
+            "type": "integer",
+            "editor": "number",
+            "description": "Results per page (1–30 for search) or reviews per page (1–100).",
+            "minimum": 1,
+            "maximum": 100
+        },
+        "language": {
+            "sectionCaption": "Localization",
+            "title": "Language",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Language code supported by the provider, such as <code>en</code>."
+        },
+        "device": {
+            "title": "Device",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "desktop",
+                "mobile",
+                "tablet"
+            ],
+            "enumTitles": [
+                "Desktop",
+                "Mobile",
+                "Tablet"
+            ],
+            "description": "Device presentation used for the source request. Leave empty for the default."
+        },
+        "zero_trace": {
+            "sectionCaption": "Privacy",
+            "title": "Zero trace",
+            "type": "boolean",
+            "default": false,
+            "description": "When enabled, PrismCrawl does not store the source or parsed response for these requests; only audit and billing metadata is kept. Results still appear in this Actor's dataset."
+        }
+    },
+    "required": [
+        "prismcrawlApiKey"
+    ]
+}

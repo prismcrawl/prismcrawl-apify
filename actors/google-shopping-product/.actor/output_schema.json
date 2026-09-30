@@ -1,0 +1,17 @@
+{
+    "$schema": "https://apify.com/schemas/v1/output.ide.json",
+    "actorOutputSchemaVersion": 1,
+    "title": "PrismCrawl Google Shopping Product API output",
+    "properties": {
+        "results": {
+            "type": "string",
+            "title": "Product",
+            "template": "{{links.apiDefaultDatasetUrl}}/items?view=product"
+        },
+        "responses": {
+            "type": "string",
+            "title": "Full PrismCrawl responses",
+            "template": "{{links.apiDefaultDatasetUrl}}/items"
+        }
+    }
+}

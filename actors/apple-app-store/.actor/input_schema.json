@@ -1,0 +1,133 @@
+{
+    "$schema": "https://apify.com/schemas/v1/input.ide.json",
+    "title": "PrismCrawl Apple App Store API input",
+    "description": "Search the Apple App Store, get app details, and collect app reviews through the PrismCrawl API as structured JSON. You need a PrismCrawl API key; each successful request uses one PrismCrawl credit, and failed requests are free.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "prismcrawlApiKey": {
+            "title": "PrismCrawl API key",
+            "type": "string",
+            "editor": "textfield",
+            "isSecret": true,
+            "description": "Your PrismCrawl API key, sent to PrismCrawl as the <code>x-api-key</code> header. Create or rotate it in the <a href=\"https://www.prismcrawl.com/\" target=\"_blank\">PrismCrawl dashboard</a>; new accounts get 100 free credits. The key is stored encrypted by Apify and is never logged or written to the dataset."
+        },
+        "mode": {
+            "title": "What to fetch",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "search",
+                "product",
+                "reviews"
+            ],
+            "enumTitles": [
+                "Search apps",
+                "App details",
+                "App reviews"
+            ],
+            "description": "Choose what to fetch. Search uses <strong>Search query</strong>; app details and reviews use <strong>App ID</strong>.",
+            "default": "search"
+        },
+        "query": {
+            "title": "Search query",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For search: text to search the App Store for.",
+            "prefill": "weather"
+        },
+        "category": {
+            "title": "Platform",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "software",
+                "iPadSoftware",
+                "macSoftware"
+            ],
+            "enumTitles": [
+                "iPhone apps",
+                "iPad apps",
+                "Mac apps"
+            ],
+            "description": "For search: which App Store catalog to search."
+        },
+        "id": {
+            "title": "App ID",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For app details and reviews: the numeric App Store ID, as returned by search or shown in the app's URL (for example <code>284882215</code>)."
+        },
+        "sort_by": {
+            "title": "Review order",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "newest",
+                "helpful"
+            ],
+            "enumTitles": [
+                "Newest",
+                "Most helpful"
+            ],
+            "description": "For reviews: the order to return them in."
+        },
+        "maxPages": {
+            "title": "Maximum pages",
+            "type": "integer",
+            "editor": "number",
+            "description": "How many pages to fetch (search and reviews only). The Actor stops early when PrismCrawl reports there is no next page. <strong>Each page is a separate PrismCrawl request and uses one credit.</strong>",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 1
+        },
+        "limit": {
+            "title": "Items per page",
+            "type": "integer",
+            "editor": "number",
+            "description": "Maximum apps or reviews per page (1–100). Apple may return fewer.",
+            "minimum": 1,
+            "maximum": 100
+        },
+        "country": {
+            "sectionCaption": "Localization",
+            "title": "Country",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Two-letter country or storefront code, such as <code>us</code> or <code>gb</code>.",
+            "pattern": "^[A-Za-z]{2}$"
+        },
+        "language": {
+            "title": "Language",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For search and app details: a language code such as <code>en</code>. Search supports <code>en</code> and <code>ja</code>. Not used for reviews."
+        },
+        "device": {
+            "title": "Device",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "desktop",
+                "mobile",
+                "tablet"
+            ],
+            "enumTitles": [
+                "Desktop",
+                "Mobile",
+                "Tablet"
+            ],
+            "description": "Device presentation used for the source request. Leave empty for the default."
+        },
+        "zero_trace": {
+            "sectionCaption": "Privacy",
+            "title": "Zero trace",
+            "type": "boolean",
+            "default": false,
+            "description": "When enabled, PrismCrawl does not store the source or parsed response for these requests; only audit and billing metadata is kept. Results still appear in this Actor's dataset."
+        }
+    },
+    "required": [
+        "prismcrawlApiKey"
+    ]
+}

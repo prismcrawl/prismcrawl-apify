@@ -1,0 +1,214 @@
+{
+    "$schema": "https://apify.com/schemas/v1/dataset.ide.json",
+    "actorSpecification": 1,
+    "fields": {
+        "type": "object",
+        "description": "One item per PrismCrawl page: the PrismCrawl response body unchanged, plus the Actor's page number and the X-Credits-Remaining header value.",
+        "required": [
+            "page",
+            "success",
+            "request_id",
+            "data"
+        ],
+        "properties": {
+            "page": {
+                "type": "integer",
+                "description": "1-based page number within this run."
+            },
+            "credits_remaining": {
+                "type": [
+                    "integer",
+                    "null"
+                ],
+                "description": "PrismCrawl credits remaining after this request (X-Credits-Remaining header), or null if not returned."
+            },
+            "success": {
+                "type": "boolean"
+            },
+            "request_id": {
+                "type": "string",
+                "description": "PrismCrawl request ID. Include it when contacting PrismCrawl support."
+            },
+            "data": {
+                "type": "object",
+                "description": "PrismCrawl response data: format and content (search_parameters, results, has_next_page, and endpoint-specific fields)."
+            }
+        }
+    },
+    "views": {
+        "results": {
+            "title": "Search results",
+            "description": "One row per ranked result (organic results, ads, and other result types).",
+            "transformation": {
+                "unwind": [
+                    "data",
+                    "content",
+                    "results"
+                ],
+                "fields": [
+                    "page",
+                    "rank",
+                    "type",
+                    "title",
+                    "url",
+                    "display_url",
+                    "snippet",
+                    "domain",
+                    "source_name",
+                    "favicon",
+                    "request_id"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "page": {
+                        "label": "Page",
+                        "format": "number"
+                    },
+                    "rank": {
+                        "label": "Rank",
+                        "format": "number"
+                    },
+                    "type": {
+                        "label": "Type",
+                        "format": "text"
+                    },
+                    "title": {
+                        "label": "Title",
+                        "format": "text"
+                    },
+                    "url": {
+                        "label": "URL",
+                        "format": "link"
+                    },
+                    "display_url": {
+                        "label": "Display URL",
+                        "format": "text"
+                    },
+                    "snippet": {
+                        "label": "Snippet",
+                        "format": "text"
+                    },
+                    "domain": {
+                        "label": "Domain",
+                        "format": "text"
+                    },
+                    "source_name": {
+                        "label": "Source",
+                        "format": "text"
+                    },
+                    "favicon": {
+                        "label": "Favicon",
+                        "format": "image"
+                    },
+                    "request_id": {
+                        "label": "PrismCrawl request ID",
+                        "format": "text"
+                    }
+                }
+            }
+        },
+        "serp_features": {
+            "title": "SERP features",
+            "description": "One row per SERP feature, such as featured snippets, People also ask, knowledge panels, news, and AI summaries.",
+            "transformation": {
+                "unwind": [
+                    "data",
+                    "content",
+                    "serp_features"
+                ],
+                "fields": [
+                    "page",
+                    "type",
+                    "title",
+                    "text",
+                    "items",
+                    "links",
+                    "source_result_ids",
+                    "confidence",
+                    "request_id"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "page": {
+                        "label": "Page",
+                        "format": "number"
+                    },
+                    "type": {
+                        "label": "Type",
+                        "format": "text"
+                    },
+                    "title": {
+                        "label": "Title",
+                        "format": "text"
+                    },
+                    "text": {
+                        "label": "Text",
+                        "format": "text"
+                    },
+                    "items": {
+                        "label": "Items",
+                        "format": "array"
+                    },
+                    "links": {
+                        "label": "Links",
+                        "format": "array"
+                    },
+                    "source_result_ids": {
+                        "label": "Related result IDs",
+                        "format": "array"
+                    },
+                    "confidence": {
+                        "label": "Confidence",
+                        "format": "number"
+                    },
+                    "request_id": {
+                        "label": "PrismCrawl request ID",
+                        "format": "text"
+                    }
+                }
+            }
+        },
+        "pages": {
+            "title": "Pages",
+            "description": "One row per PrismCrawl request, with the complete normalized response.",
+            "transformation": {
+                "fields": [
+                    "page",
+                    "request_id",
+                    "success",
+                    "credits_remaining",
+                    "data"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "page": {
+                        "label": "Page",
+                        "format": "number"
+                    },
+                    "request_id": {
+                        "label": "PrismCrawl request ID",
+                        "format": "text"
+                    },
+                    "success": {
+                        "label": "Success",
+                        "format": "boolean"
+                    },
+                    "credits_remaining": {
+                        "label": "Credits remaining",
+                        "format": "number"
+                    },
+                    "data": {
+                        "label": "Response data",
+                        "format": "object"
+                    }
+                }
+            }
+        }
+    }
+}

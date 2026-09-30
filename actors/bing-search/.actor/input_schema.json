@@ -1,0 +1,187 @@
+{
+    "$schema": "https://apify.com/schemas/v1/input.ide.json",
+    "title": "PrismCrawl Bing Search API input",
+    "description": "Run live Bing searches through the PrismCrawl API and receive normalized search results, SERP features, and pagination metadata. You need a PrismCrawl API key; each successful request uses one PrismCrawl credit, and failed requests are free.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "prismcrawlApiKey": {
+            "title": "PrismCrawl API key",
+            "type": "string",
+            "editor": "textfield",
+            "isSecret": true,
+            "description": "Your PrismCrawl API key, sent to PrismCrawl as the <code>x-api-key</code> header. Create or rotate it in the <a href=\"https://www.prismcrawl.com/\" target=\"_blank\">PrismCrawl dashboard</a>; new accounts get 100 free credits. The key is stored encrypted by Apify and is never logged or written to the dataset."
+        },
+        "query": {
+            "title": "Search query",
+            "type": "string",
+            "editor": "textfield",
+            "description": "What to search for on Bing. Search operators such as <code>site:</code> work as usual. Limited to 8,192 UTF-8 bytes.",
+            "prefill": "best coffee shops in Baltimore"
+        },
+        "maxPages": {
+            "title": "Maximum pages",
+            "type": "integer",
+            "editor": "number",
+            "description": "How many pages to fetch (one Bing results page each). The Actor stops early when PrismCrawl reports there is no next page. <strong>Each page is a separate PrismCrawl request and uses one credit.</strong>",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 1
+        },
+        "cc": {
+            "sectionCaption": "Location and language",
+            "title": "Country (cc)",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "ar",
+                "au",
+                "at",
+                "be",
+                "br",
+                "ca",
+                "cl",
+                "dk",
+                "fi",
+                "fr",
+                "de",
+                "hk",
+                "in",
+                "id",
+                "it",
+                "jp",
+                "kr",
+                "my",
+                "mx",
+                "nl",
+                "nz",
+                "no",
+                "cn",
+                "pl",
+                "pt",
+                "ph",
+                "ru",
+                "sa",
+                "za",
+                "es",
+                "se",
+                "ch",
+                "tw",
+                "tr",
+                "gb",
+                "us"
+            ],
+            "enumTitles": [
+                "Argentina (ar)",
+                "Australia (au)",
+                "Austria (at)",
+                "Belgium (be)",
+                "Brazil (br)",
+                "Canada (ca)",
+                "Chile (cl)",
+                "Denmark (dk)",
+                "Finland (fi)",
+                "France (fr)",
+                "Germany (de)",
+                "Hong Kong SAR China (hk)",
+                "India (in)",
+                "Indonesia (id)",
+                "Italy (it)",
+                "Japan (jp)",
+                "South Korea (kr)",
+                "Malaysia (my)",
+                "Mexico (mx)",
+                "Netherlands (nl)",
+                "New Zealand (nz)",
+                "Norway (no)",
+                "China (cn)",
+                "Poland (pl)",
+                "Portugal (pt)",
+                "Philippines (ph)",
+                "Russia (ru)",
+                "Saudi Arabia (sa)",
+                "South Africa (za)",
+                "Spain (es)",
+                "Sweden (se)",
+                "Switzerland (ch)",
+                "Taiwan (tw)",
+                "Türkiye (tr)",
+                "United Kingdom (gb)",
+                "United States (us)"
+            ],
+            "description": "Two-letter Bing result-country code, from Bing's published country list.",
+            "default": "us"
+        },
+        "setlang": {
+            "title": "Interface language (setlang)",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Bing interface-language hint, such as <code>en-US</code>. It affects interface strings such as related-search labels; it does not restrict results to that language.",
+            "default": "en-US"
+        },
+        "latitude": {
+            "title": "Latitude",
+            "type": "number",
+            "editor": "number",
+            "description": "Searcher latitude. Bing uses it as a location signal to bias local relevance, not as a strict filter. Set together with longitude.",
+            "minimum": -90,
+            "maximum": 90
+        },
+        "longitude": {
+            "title": "Longitude",
+            "type": "number",
+            "editor": "number",
+            "description": "Longitude, for example <code>-76.6122</code>. Set together with latitude.",
+            "minimum": -180,
+            "maximum": 180
+        },
+        "device": {
+            "title": "Device",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "mobile",
+                "tablet",
+                "desktop"
+            ],
+            "enumTitles": [
+                "Mobile",
+                "Tablet",
+                "Desktop"
+            ],
+            "description": "Search as a desktop, mobile, or tablet device."
+        },
+        "tbs": {
+            "sectionCaption": "Filters",
+            "title": "Time range (tbs)",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Time filter in Google-compatible syntax, translated to Bing's date filter: <code>qdr:d</code> (past day), <code>qdr:w</code> (past week), <code>qdr:m</code> (past month), <code>qdr:y</code> (past year), with an optional number such as <code>qdr:m6</code>; or a custom range <code>cdr:1,cd_min:8/1/2026,cd_max:8/12/2026</code>. Hour ranges are not supported."
+        },
+        "safe": {
+            "title": "SafeSearch",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "active",
+                "off"
+            ],
+            "enumTitles": [
+                "Strict (active)",
+                "Off"
+            ],
+            "description": "Bing Strict SafeSearch (<code>active</code>) or unfiltered results (<code>off</code>). Leave empty for the default."
+        },
+        "zero_trace": {
+            "sectionCaption": "Privacy",
+            "title": "Zero trace",
+            "type": "boolean",
+            "default": false,
+            "description": "When enabled, PrismCrawl does not store the source or parsed response for these requests; only audit and billing metadata is kept. Results still appear in this Actor's dataset."
+        }
+    },
+    "required": [
+        "prismcrawlApiKey",
+        "query"
+    ]
+}
