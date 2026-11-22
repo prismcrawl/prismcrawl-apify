@@ -43,7 +43,7 @@
             "editor": "number",
             "description": "Google Maps viewport zoom, from 3 to 21. Lower values cover a wider area; higher values focus more tightly around the center. PrismCrawl defaults to 13.1.",
             "minimum": 3,
-            "maximum": 21
+            "maximum": 30
         },
         "maxPages": {
             "title": "Maximum pages",

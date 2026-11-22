@@ -1,0 +1,17 @@
+{
+    "$schema": "https://apify.com/schemas/v1/output.ide.json",
+    "actorOutputSchemaVersion": 1,
+    "title": "PrismCrawl Walmart API output",
+    "properties": {
+        "results": {
+            "type": "string",
+            "title": "Products and offers",
+            "template": "{{links.apiDefaultDatasetUrl}}/items?view=items"
+        },
+        "responses": {
+            "type": "string",
+            "title": "Full PrismCrawl responses",
+            "template": "{{links.apiDefaultDatasetUrl}}/items"
+        }
+    }
+}

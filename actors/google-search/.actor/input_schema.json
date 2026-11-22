@@ -1238,7 +1238,7 @@
             "type": "string",
             "editor": "textfield",
             "description": "A raw Google-encoded location (starting with <code>w+</code> or <code>a+</code>), forwarded unchanged. Google may ignore unsupported values. Prefer <strong>Location</strong> unless you already have UULE strings. Cannot be combined with location or coordinates.",
-            "pattern": "^[wa]\\+[A-Za-z0-9+/]+={0,2}$"
+            "pattern": "^[wa]\\+(?:[A-Za-z0-9+/]+|[A-Za-z0-9_-]+)={0,2}$"
         },
         "nfpr": {
             "title": "Spelling correction (nfpr)",

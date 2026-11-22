@@ -63,13 +63,15 @@
                 "apps",
                 "books",
                 "movies",
-                "audiobooks"
+                "audiobooks",
+                "tv"
             ],
             "enumTitles": [
                 "Apps",
                 "Books",
                 "Movies",
-                "Audiobooks"
+                "Audiobooks",
+                "TV"
             ],
             "description": "For product details: the store section of the product. Leave empty for apps."
         },

@@ -148,6 +148,7 @@ PrismCrawl's documented example response; live values vary.
                     "url": "https://www.amazon.com/example/dp/B0D1234567",
                     "clean_url": "https://www.amazon.com/dp/B0D1234567",
                     "image": "https://m.media-amazon.com/images/example.jpg",
+                    "thumbnail": "https://m.media-amazon.com/images/example.jpg",
                     "price": {
                         "raw": "$199.99",
                         "value": 199.99,

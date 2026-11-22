@@ -20,7 +20,7 @@ class GeneratedFilesTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_every_actor_has_an_endpoint_and_actor_json(self) -> None:
-        self.assertEqual(len(ACTOR_SLUGS), 10)
+        self.assertEqual(len(ACTOR_SLUGS), 13)
         for slug in ACTOR_SLUGS:
             with self.subTest(slug=slug):
                 self.assertTrue((ROOT / 'actors' / slug / 'my_actor' / 'endpoint.py').is_file())

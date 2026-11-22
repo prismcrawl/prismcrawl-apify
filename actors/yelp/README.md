@@ -58,7 +58,7 @@ Parameter names in the table are the PrismCrawl API names, so you can look each 
 | Search query | `query` | For business lookup. |
 | Location or Latitude / Longitude | `location` / `coordinates` | For business lookup: exactly one is required. |
 | Business alias | `id` | For reviews, such as `halcyon-austin-2`. |
-| Review order | `sort_by` | For reviews: `recommended`, `newest`, `oldest`, `highest_rating`, `lowest_rating`. |
+| Review order | `sort_by` | For reviews: `recommended`, `newest`, `oldest`, `highest_rating`, `lowest_rating`, `elites`. |
 | Maximum pages | – | Pages to fetch (1–100, default 1). Each page uses one credit. |
 | First page | `page` | One-based page to start from. |
 | Items per page | `limit` | 1–100. |

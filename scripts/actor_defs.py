@@ -1254,7 +1254,7 @@ GOOGLE_PLAY = ActorDef(
             'Product type',
             'For product details: the store section of the product. Leave empty for apps.',
             spec_enum('Catalog_google_play_product_Request', 'category'),
-            ['Apps', 'Books', 'Movies', 'Audiobooks'],
+            ['Apps', 'Books', 'Movies', 'Audiobooks', 'TV'],
         ),
         'sort_by': select(
             'Review order',
@@ -1291,7 +1291,7 @@ GOOGLE_PLAY = ActorDef(
         ('Search query', '`query`', 'For searches.'),
         ('Games category', '`category`', 'For game searches, such as `GAME_ACTION`.'),
         ('Product ID', '`id`', 'For product details and reviews, such as `com.google.android.apps.maps`.'),
-        ('Product type', '`category`', 'For product details: `apps`, `books`, `movies`, or `audiobooks`.'),
+        ('Product type', '`category`', 'For product details: `apps`, `books`, `movies`, `audiobooks`, or `tv`.'),
         ('Review order', '`sort_by`', 'For reviews: `newest`, `relevant`, or `rating`.'),
         ('Maximum pages', '–', 'Pages to fetch (1–100, default 1). Each page uses one credit.'),
         ('Items per page', '`limit`', '1–100.'),
@@ -1493,7 +1493,7 @@ YELP = ActorDef(
             'Review order',
             'For reviews: the order to return them in.',
             spec_enum('Catalog_yelp_reviews_Request', 'sort_by'),
-            ['Recommended', 'Newest', 'Oldest', 'Highest rating', 'Lowest rating'],
+            ['Recommended', 'Newest', 'Oldest', 'Highest rating', 'Lowest rating', 'Elite reviewers first'],
         ),
         'maxPages': max_pages(100, 'one page of businesses or reviews each'),
         'page': integer(
@@ -1554,7 +1554,7 @@ YELP = ActorDef(
         (
             'Review order',
             '`sort_by`',
-            'For reviews: `recommended`, `newest`, `oldest`, `highest_rating`, `lowest_rating`.',
+            'For reviews: `recommended`, `newest`, `oldest`, `highest_rating`, `lowest_rating`, `elites`.',
         ),
         ('Maximum pages', '–', 'Pages to fetch (1–100, default 1). Each page uses one credit.'),
         ('First page', '`page`', 'One-based page to start from.'),
@@ -1646,7 +1646,7 @@ TRIPADVISOR = ActorDef(
             'Review order',
             'For reviews: the order to return them in.',
             spec_enum('Catalog_tripadvisor_reviews_Request', 'sort_by'),
-            ['Recommended', 'Newest'],
+            ['Recommended', 'Newest', 'Most recent', 'Detailed reviews first'],
         ),
         'maxPages': max_pages(100, 'search and reviews only'),
         'limit': integer(
@@ -1689,7 +1689,7 @@ TRIPADVISOR = ActorDef(
         ('What to fetch', '–', '`search`, `place` (details), or `reviews`.'),
         ('Search query / Location', '`query` / `location`', 'For search.'),
         ('Place URL', '`id`', 'For details and reviews: the canonical Tripadvisor URL from search.'),
-        ('Review order', '`sort_by`', 'For reviews: `recommended` or `newest`.'),
+        ('Review order', '`sort_by`', 'For reviews: `recommended`, `newest`, `most_recent`, or `detailed_review`.'),
         ('Maximum pages', '–', 'Pages to fetch (1–100, default 1). Each page uses one credit.'),
         ('Items per page', '`limit`', '1–30 for search, 1–100 for reviews.'),
         ('Language / Device', '`language` / `device`', 'For example `en`, `mobile`.'),
@@ -1726,6 +1726,414 @@ TRIPADVISOR = ActorDef(
     related=['yelp', 'google-maps-reviews'],
 )
 
+
+# YouTube --------------------------------------------------------------------------------------------------------
+
+VIDEOS_VIEW = table_view(
+    'Videos and channels',
+    'One row per video, channel, playlist, or transcript segment.',
+    [
+        ('position', 'Position', 'number'),
+        ('thumbnail', 'Thumbnail', 'image'),
+        ('type', 'Type', 'text'),
+        ('title', 'Title', 'text'),
+        ('channel', 'Channel', 'text'),
+        ('view_count', 'Views', 'number'),
+        ('duration', 'Duration', 'text'),
+        ('published_at', 'Published', 'text'),
+        ('start_seconds', 'Start (s)', 'number'),
+        ('text', 'Text', 'text'),
+        ('url', 'URL', 'link'),
+    ],
+)
+_YT = '/v1/youtube/search'
+YOUTUBE = ActorDef(
+    slug='youtube',
+    name='prismcrawl-youtube-api',
+    title='PrismCrawl YouTube API',
+    description='Search YouTube, get video and channel details, and download video transcripts through the '
+    'PrismCrawl API as structured JSON.',
+    paths=[_YT, '/v1/youtube/video', '/v1/youtube/channel', '/v1/youtube/transcript'],
+    fields={
+        'prismcrawlApiKey': API_KEY,
+        'mode': mode_select(
+            ['search', 'video', 'channel', 'transcript'],
+            ['Search videos', 'Video details', 'Channel videos', 'Video transcript'],
+            'search',
+            'Choose what to fetch. Search uses <strong>Search query</strong>; the others use '
+            '<strong>Video or channel ID</strong>.',
+        ),
+        'query': text('Search query', 'For search: text to search YouTube for.', prefill='espresso machine review'),
+        'sp': text(
+            'Search filter token',
+            'For search: the <code>sp</code> value from a YouTube search filter link, such as upload date or '
+            'duration. Kept fixed while paging.',
+        ),
+        'id': text(
+            'Video or channel ID',
+            'A video ID such as <code>jNQXAC9IVRw</code>, or a channel handle or ID such as <code>@Google</code>.',
+        ),
+        'tab': select(
+            'Channel tab',
+            'For channels: which part of the channel to list. Defaults to videos.',
+            spec_enum('Catalog_youtube_channel_Request', 'tab'),
+            ['Videos', 'Shorts', 'Live streams', 'Podcasts', 'Playlists', 'Posts'],
+        ),
+        'sort': select(
+            'Channel sort',
+            'For channels: <code>latest</code>, <code>popular</code>, or <code>oldest</code> for videos, '
+            'shorts, and streams; <code>dd</code> (date added) or <code>lad</code> (last video added) for playlists.',
+            spec_enum('Catalog_youtube_channel_Request', 'sort'),
+            ['Latest', 'Popular', 'Oldest', 'Date added (playlists)', 'Last video added (playlists)'],
+        ),
+        'search_query': text('Search within channel', "For channels: search the channel's videos and playlists."),
+        'about': {
+            'title': 'Include channel details',
+            'type': 'boolean',
+            'description': 'For channels: also return the country, join date, total views, and links. Uses an '
+            'extra source request.',
+        },
+        'language_code': text(
+            'Transcript language',
+            'For transcripts: preferred caption language, such as <code>en</code>. Falls back to the first '
+            'available track.',
+        ),
+        'title': text('Caption track title', 'For transcripts: pick a caption track by its title.'),
+        'type': select(
+            'Caption type',
+            'For transcripts: set to use automatically generated captions.',
+            spec_enum('Catalog_youtube_video_transcript_Request', 'type'),
+            ['Auto-generated'],
+        ),
+        'maxPages': max_pages(20, 'search, videos, and channels only'),
+        'country': {**section('Localization'), **COUNTRY},
+        'language': text('Language', 'Interface language, such as <code>en</code>. Not used for transcripts.'),
+        'device': DEVICE,
+        'zero_trace': ZERO_TRACE,
+    },
+    required=['prismcrawlApiKey'],
+    views={'items': VIDEOS_VIEW},
+    target='YouTube data',
+    intro='searches **YouTube**, fetches **video details** and **channel listings**, and downloads **video '
+    'transcripts** through the PrismCrawl API. Results include **title, channel, views, duration, publish date, '
+    'thumbnail, and URL**, and transcripts come back as timed text segments.',
+    why=[
+        '**Content research**: see which videos rank for a topic and how they perform.',
+        "**Channel tracking**: list a channel's latest or most popular videos, shorts, and streams.",
+        '**Transcripts for AI**: feed video captions to summarization, search, or RAG pipelines.',
+    ],
+    input_rows=[
+        ('What to fetch', '–', '`search`, `video`, `channel`, or `transcript`.'),
+        ('Search query', '`query`', 'For search.'),
+        ('Video or channel ID', '`id`', 'For video details, channels, and transcripts.'),
+        ('Channel tab / sort', '`tab` / `sort`', 'For channels, such as `videos` and `popular`.'),
+        ('Transcript language', '`language_code`', 'For transcripts, such as `en`.'),
+        ('Maximum pages', '–', 'Pages to fetch (1–20, default 1). Each page uses one credit.'),
+        ('Country / Language / Device', '`country` / `language` / `device`', 'For example `us`, `en`, `mobile`.'),
+    ],
+    input_notes="Fields that don't apply to the selected mode are ignored, and the run log lists them.",
+    example_input={'mode': 'search', **request_example(_YT), 'maxPages': 2},
+    example_output=catalog_example(
+        'youtube',
+        'search',
+        [
+            {
+                'position': 1,
+                'type': 'video',
+                'id': '<video id>',
+                'title': 'Example video title',
+                'channel': 'Example Channel',
+                'view_count': 120000,
+                'duration': '12:34',
+                'published_at': '2026-10-01',
+                'url': 'https://www.youtube.com/watch?v=<video id>',
+            }
+        ],
+    ),
+    example_is_illustrative=True,
+    data_fields=[
+        (
+            '`data.content.results[]` (search, channel)',
+            'Videos, channels, and playlists: `type`, `id`, `title`, `channel`, `channel_id`, `view_count`, '
+            '`duration`, `published_at`, `thumbnail`, `url`.',
+        ),
+        ('`data.content.results[]` (video)', 'Video details, plus `likes`, `comments`, and `related_videos`.'),
+        ('`data.content.results[]` (transcript)', 'Caption segments: `start_seconds`, `duration_seconds`, `text`.'),
+    ],
+    tips=[
+        '**Transcripts need public captions.** Videos without captions return an empty result.',
+        '**Use a search filter token** (`sp`) from a YouTube filter link to filter by upload date, type, or length.',
+    ],
+    pagination_note='The Actor follows `next_page_token` from each response. Transcripts are a single page.',
+    standby_note="Pass the previous response's `next_page_token` in the body to get the next page.",
+)
+
+
+# Walmart --------------------------------------------------------------------------------------------------------
+
+PRODUCTS_VIEW = table_view(
+    'Products and offers',
+    'One row per product or seller offer.',
+    [
+        ('position', 'Position', 'number'),
+        ('thumbnail', 'Image', 'image'),
+        ('title', 'Title', 'text'),
+        ('id', 'ID', 'text'),
+        ('price', 'Price', 'number'),
+        ('currency', 'Currency', 'text'),
+        ('rating', 'Rating', 'number'),
+        ('review_count', 'Reviews', 'number'),
+        ('seller', 'Seller', 'text'),
+        ('seller_name', 'Seller name', 'text'),
+        ('availability', 'Availability', 'text'),
+        ('url', 'URL', 'link'),
+    ],
+)
+_W = '/v1/walmart/search'
+WALMART = ActorDef(
+    slug='walmart',
+    name='prismcrawl-walmart-api',
+    title='PrismCrawl Walmart API',
+    description='Search Walmart products, get product details and seller offers, and collect product reviews '
+    'through the PrismCrawl API as structured JSON.',
+    paths=[_W, '/v1/walmart/product', '/v1/walmart/product/sellers', '/v1/walmart/reviews'],
+    fields={
+        'prismcrawlApiKey': API_KEY,
+        'mode': mode_select(
+            ['search', 'product', 'sellers', 'reviews'],
+            ['Search products', 'Product details', 'Seller offers', 'Product reviews'],
+            'search',
+            'Choose what to fetch. Search uses <strong>Search query</strong>; the others use '
+            '<strong>Product ID</strong>.',
+        ),
+        'query': text('Search query', 'For search: text to search Walmart for.', prefill='coffee maker'),
+        'cat_id': text(
+            'Category path',
+            'For search (US only): an underscore-separated Walmart category path. Can replace the query.',
+        ),
+        'sort': select(
+            'Search sort',
+            'For search: result order. Walmart Mexico supports price and best match only.',
+            spec_enum('Catalog_walmart_Request', 'sort'),
+            ['Price: low to high', 'Price: high to low', 'Best sellers', 'Best match', 'Highest rated', 'Newest'],
+        ),
+        'min_price': number('Minimum price', 'For search.', minimum=0),
+        'max_price': number('Maximum price', 'For search.', minimum=0),
+        'id': text('Product ID', 'For details, sellers, and reviews: the product ID from search results.'),
+        'store_id': text(
+            'Store ID',
+            'Walmart store for local availability and pricing. Required for seller offers.',
+        ),
+        'rating': integer(
+            'Star rating', 'For reviews: only return reviews with this rating (1–5).', minimum=1, maximum=5
+        ),
+        'reviewSort': select(
+            'Review sort',
+            'For reviews: the order to return them in.',
+            spec_enum('Catalog_walmart_reviews_Request', 'sort'),
+            ['Most relevant', 'Most helpful', 'Newest', 'Oldest', 'Highest rating', 'Lowest rating'],
+        ),
+        'maxPages': max_pages(100, 'search and reviews only'),
+        'walmart_domain': {
+            **section('Marketplace'),
+            **select(
+                'Marketplace',
+                'For search: Walmart US or Walmart Mexico. Defaults to walmart.com.',
+                spec_enum('Catalog_walmart_Request', 'walmart_domain'),
+                ['Walmart US (walmart.com)', 'Walmart Mexico (walmart.com.mx)'],
+            ),
+        },
+        'device': DEVICE,
+        'zero_trace': ZERO_TRACE,
+    },
+    required=['prismcrawlApiKey'],
+    views={'items': PRODUCTS_VIEW, 'reviews': REVIEWS_VIEW},
+    target='Walmart product data',
+    intro='searches **Walmart**, fetches **product details** and **seller offers**, and collects **product reviews** '
+    'through the PrismCrawl API. Results include **title, price, rating, review count, seller, availability, '
+    'images, and URL**.',
+    why=[
+        '**Price monitoring**: track prices and availability by store.',
+        '**Marketplace research**: compare third-party seller offers for the same item.',
+        '**Review analysis**: collect reviews to understand product quality and complaints.',
+    ],
+    input_rows=[
+        ('What to fetch', '–', '`search`, `product`, `sellers`, or `reviews`.'),
+        ('Search query / Category path', '`query` / `cat_id`', 'For search; one is required.'),
+        ('Search sort', '`sort`', 'For search, such as `price_low` or `best_seller`.'),
+        ('Product ID', '`id`', 'For details, sellers, and reviews.'),
+        ('Store ID', '`store_id`', 'Local availability and pricing; required for seller offers.'),
+        ('Review sort / Star rating', '`sort` / `rating`', 'For reviews.'),
+        ('Maximum pages', '–', 'Pages to fetch (1–100, default 1). Each page uses one credit.'),
+    ],
+    input_notes="Fields that don't apply to the selected mode are ignored, and the run log lists them.",
+    example_input={'mode': 'search', **request_example(_W), 'sort': 'best_seller', 'maxPages': 2},
+    example_output=catalog_example(
+        'walmart',
+        'search',
+        [
+            {
+                'position': 1,
+                'id': '<product id>',
+                'title': 'Example 12-cup coffee maker',
+                'price': 29.97,
+                'currency': 'USD',
+                'rating': 4.5,
+                'review_count': 1820,
+                'seller': 'Walmart.com',
+                'availability': 'in_stock',
+                'url': 'https://www.walmart.com/ip/<product id>',
+            }
+        ],
+    ),
+    example_is_illustrative=True,
+    data_fields=[
+        (
+            '`data.content.results[]` (search, details)',
+            'Products: `id`, `title`, `price`, `currency`, `rating`, `review_count`, `seller`, `availability`, '
+            '`sponsored`, `thumbnail`, `url`.',
+        ),
+        (
+            '`data.content.results[]` (sellers)',
+            'Offers: `seller_name`, `seller_type`, `price`, `availability`, `return_policy`.',
+        ),
+        REVIEW_FIELDS_ROW,
+    ],
+    tips=[
+        '**Seller offers need a store ID.** Use the store whose prices you want to compare.',
+        '**Search returns filters too** when Walmart shows them, so you can refine with `facet` in Standby mode.',
+    ],
+    pagination_note='The Actor increments `page` while `has_next_page` is true. Details and seller offers are a '
+    'single page.',
+    standby_note='Pass `page` in the body to get a specific page.',
+    related=['amazon-search', 'ebay'],
+)
+
+
+# eBay -----------------------------------------------------------------------------------------------------------
+
+_E = '/v1/ebay/search'
+EBAY = ActorDef(
+    slug='ebay',
+    name='prismcrawl-ebay-api',
+    title='PrismCrawl eBay API',
+    description='Search eBay listings, get item details, and look up sellers and their inventory through the '
+    'PrismCrawl API as structured JSON.',
+    paths=[_E, '/v1/ebay/product', '/v1/ebay/seller'],
+    fields={
+        'prismcrawlApiKey': API_KEY,
+        'mode': mode_select(
+            ['search', 'product', 'seller'],
+            ['Search listings', 'Item details', 'Seller'],
+            'search',
+            'Choose what to fetch. Search uses <strong>Search query</strong>; item details and sellers use '
+            '<strong>Item or seller ID</strong>.',
+        ),
+        'query': text('Search query', 'For search: text to search eBay for.', prefill='vintage camera'),
+        'category_id': text('Category ID', 'For search: a numeric eBay category ID. Can replace the query.'),
+        'buying_format': select(
+            'Buying format',
+            'For search: auctions, Buy It Now, or Best Offer.',
+            spec_enum('Catalog_ebay_Request', 'buying_format'),
+            ['Auction', 'Buy It Now', 'Best Offer'],
+        ),
+        '_udlo': number('Minimum price', 'For search.', minimum=0),
+        '_udhi': number('Maximum price', 'For search.', minimum=0),
+        'show_only': text(
+            'Listing filters',
+            'For search: comma-separated eBay filters, such as free shipping or free returns.',
+        ),
+        'LH_ItemCondition': text(
+            'Item condition IDs',
+            'For search: pipe-separated eBay condition IDs, such as <code>1000|3000</code>.',
+        ),
+        '_stpos': text('Postal code', 'For search: ZIP or postal code for delivery and distance filters.'),
+        'id': text('Item or seller ID', 'For item details: the item ID. For sellers: the public username.'),
+        'shipping_country': select(
+            'Ship to',
+            'For item details: the destination used for delivery estimates.',
+            spec_enum('Catalog_ebay_product_Request', 'shipping_country'),
+            [region_title(code) for code in spec_enum('Catalog_ebay_product_Request', 'shipping_country')],
+        ),
+        'type': select(
+            'Seller inventory',
+            "For sellers: list the seller's user or store inventory. Leave empty for the profile only.",
+            spec_enum('Catalog_ebay_seller_Request', 'type'),
+            ['User listings', 'Store listings'],
+        ),
+        'limit': integer(
+            'Items per page',
+            'For seller inventory: maximum listings per page (1–100).',
+            minimum=1,
+            maximum=100,
+        ),
+        'maxPages': max_pages(100, 'search and seller inventory only'),
+        'ebay_domain': {
+            **section('Marketplace'),
+            **select(
+                'Marketplace',
+                'Regional eBay site. Defaults to ebay.com.',
+                spec_enum('Catalog_ebay_Request', 'ebay_domain'),
+                spec_enum('Catalog_ebay_Request', 'ebay_domain'),
+            ),
+        },
+        'device': DEVICE,
+        'zero_trace': ZERO_TRACE,
+    },
+    required=['prismcrawlApiKey'],
+    views={'items': PRODUCTS_VIEW},
+    target='eBay listing data',
+    intro='searches **eBay listings**, fetches **item details**, and looks up **sellers and their inventory** '
+    'through the PrismCrawl API. Results include **title, price, condition, shipping, seller, images, and URL**.',
+    why=[
+        '**Resale research**: see what items list and sell for across regional eBay sites.',
+        "**Seller monitoring**: track a seller's feedback and current inventory.",
+        '**Price comparison**: compare eBay listings with Amazon and Walmart.',
+    ],
+    input_rows=[
+        ('What to fetch', '–', '`search`, `product` (item details), or `seller`.'),
+        ('Search query / Category ID', '`query` / `category_id`', 'For search; one is required.'),
+        ('Buying format / Price range', '`buying_format` / `_udlo` / `_udhi`', 'For search.'),
+        ('Item or seller ID', '`id`', 'For item details and sellers.'),
+        ('Seller inventory', '`type`', 'For sellers: `user` or `store`; leave empty for the profile.'),
+        ('Maximum pages', '–', 'Pages to fetch (1–100, default 1). Each page uses one credit.'),
+        ('Marketplace', '`ebay_domain`', 'For example `ebay.co.uk`.'),
+    ],
+    input_notes="Fields that don't apply to the selected mode are ignored, and the run log lists them.",
+    example_input={'mode': 'search', **request_example(_E), 'buying_format': 'BIN', 'maxPages': 2},
+    example_output=catalog_example(
+        'ebay',
+        'search',
+        [
+            {
+                'position': 1,
+                'id': '<item id>',
+                'title': 'Example vintage 35mm film camera',
+                'price': 89.99,
+                'condition': 'Pre-Owned',
+                'shipping': 'Free delivery',
+                'url': 'https://www.ebay.com/itm/<item id>',
+            }
+        ],
+    ),
+    example_is_illustrative=True,
+    data_fields=[
+        (
+            '`data.content.results[]` (search, seller inventory)',
+            'Listings: `id`, `title`, `price`, `condition`, `shipping`, `thumbnail`, `url`.',
+        ),
+        ('`data.content.results[]` (item details)', 'Item: `title`, `price`, `brand`, `images`, `offers`, `shipping`.'),
+        ('`data.content.seller`', 'Seller profile: name, feedback score, and positive feedback.'),
+    ],
+    tips=[
+        '**Seller inventory needs a type.** Set `user` or `store`; without it you get the profile only.',
+        '**Regional sites differ.** Some sort orders and filters are unavailable on specific eBay domains.',
+    ],
+    pagination_note='The Actor increments `page` while `has_next_page` is true. Item details are a single page.',
+    standby_note='Pass `page` in the body to get a specific page.',
+    related=['walmart', 'amazon-search'],
+)
+
 ACTORS = [
     GOOGLE_SEARCH,
     GOOGLE_MAPS_PLACES,
@@ -1737,4 +2145,7 @@ ACTORS = [
     APPLE_APP_STORE,
     YELP,
     TRIPADVISOR,
+    YOUTUBE,
+    WALMART,
+    EBAY,
 ]

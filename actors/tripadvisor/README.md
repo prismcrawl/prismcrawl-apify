@@ -57,7 +57,7 @@ Parameter names in the table are the PrismCrawl API names, so you can look each 
 | What to fetch | – | `search`, `place` (details), or `reviews`. |
 | Search query / Location | `query` / `location` | For search. |
 | Place URL | `id` | For details and reviews: the canonical Tripadvisor URL from search. |
-| Review order | `sort_by` | For reviews: `recommended` or `newest`. |
+| Review order | `sort_by` | For reviews: `recommended`, `newest`, `most_recent`, or `detailed_review`. |
 | Maximum pages | – | Pages to fetch (1–100, default 1). Each page uses one credit. |
 | Items per page | `limit` | 1–30 for search, 1–100 for reviews. |
 | Language / Device | `language` / `device` | For example `en`, `mobile`. |

@@ -58,7 +58,7 @@ Parameter names in the table are the PrismCrawl API names, so you can look each 
 | Search query | `query` | For searches. |
 | Games category | `category` | For game searches, such as `GAME_ACTION`. |
 | Product ID | `id` | For product details and reviews, such as `com.google.android.apps.maps`. |
-| Product type | `category` | For product details: `apps`, `books`, `movies`, or `audiobooks`. |
+| Product type | `category` | For product details: `apps`, `books`, `movies`, `audiobooks`, or `tv`. |
 | Review order | `sort_by` | For reviews: `newest`, `relevant`, or `rating`. |
 | Maximum pages | – | Pages to fetch (1–100, default 1). Each page uses one credit. |
 | Items per page | `limit` | 1–100. |

@@ -16,6 +16,9 @@ run's dataset. Users bring their own PrismCrawl API key (a secret input).
 | PrismCrawl Apple App Store API | `actors/apple-app-store` | `/v1/apple/app-store/*` (search, product, reviews) |
 | PrismCrawl Yelp API | `actors/yelp` | `/v1/yelp/search`, `/v1/yelp/reviews` |
 | PrismCrawl Tripadvisor API | `actors/tripadvisor` | `/v1/tripadvisor/*` (search, place, reviews) |
+| PrismCrawl YouTube API | `actors/youtube` | `/v1/youtube/*` (search, video, channel, transcript) |
+| PrismCrawl Walmart API | `actors/walmart` | `/v1/walmart/*` (search, product, sellers, reviews) |
+| PrismCrawl eBay API | `actors/ebay` | `/v1/ebay/*` (search, product, seller) |
 
 ## Layout
 

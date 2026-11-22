@@ -185,6 +185,53 @@ FULL_INPUTS: dict[str, list[dict[str, Any]]] = {
             'limit': 100,
         },
     ],
+    'youtube': [
+        {'mode': 'search', 'query': 'coffee', 'sp': 'EgIQAQ', 'language': 'en', 'country': 'us', 'maxPages': 2},
+        {'mode': 'video', 'id': 'jNQXAC9IVRw', 'language': 'en', 'device': 'mobile'},
+        {
+            'mode': 'channel',
+            'id': '@Google',
+            'tab': 'videos',
+            'sort': 'popular',
+            'search_query': 'pixel',
+            'about': True,
+            'language': 'en',
+        },
+        {'mode': 'transcript', 'id': 'jNQXAC9IVRw', 'language_code': 'en', 'title': 'English', 'type': 'asr'},
+    ],
+    'walmart': [
+        {
+            'mode': 'search',
+            'query': 'coffee maker',
+            'cat_id': '976759',
+            'sort': 'best_seller',
+            'min_price': 10,
+            'max_price': 100,
+            'walmart_domain': 'walmart.com',
+            'store_id': '100',
+            'maxPages': 2,
+        },
+        {'mode': 'product', 'id': '510561525', 'store_id': '100'},
+        {'mode': 'sellers', 'id': '10543894', 'store_id': '100'},
+        {'mode': 'reviews', 'id': '510561525', 'rating': 5, 'reviewSort': 'helpful', 'maxPages': 3},
+    ],
+    'ebay': [
+        {
+            'mode': 'search',
+            'query': 'vintage camera',
+            'category_id': '625',
+            'buying_format': 'BIN',
+            '_udlo': 10,
+            '_udhi': 500,
+            'show_only': 'FR',
+            'LH_ItemCondition': '3000',
+            '_stpos': '10001',
+            'ebay_domain': 'ebay.com',
+            'maxPages': 2,
+        },
+        {'mode': 'product', 'id': '153019705014', 'shipping_country': 'US'},
+        {'mode': 'seller', 'id': 'second.sale', 'type': 'store', 'limit': 48, 'maxPages': 2},
+    ],
 }
 
 
@@ -210,7 +257,7 @@ class SpecConformanceTests(unittest.TestCase):
                         self.assertIn(request.pagination.param, properties)
 
     def test_input_enums_and_defaults_match_spec(self) -> None:
-        renamed = {'productCategory': 'category', 'gamesCategory': 'category'}
+        renamed = {'productCategory': 'category', 'gamesCategory': 'category', 'reviewSort': 'sort'}
         for slug in ACTOR_SLUGS:
             schema = json.loads((ROOT / 'actors' / slug / '.actor' / 'input_schema.json').read_text())
             paths = {build(slug, {**i, 'prismcrawlApiKey': API_KEY}).path for i in FULL_INPUTS[slug]}
@@ -408,3 +455,42 @@ class OtherActorTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class NewActorModeTests(unittest.TestCase):
+    def assert_invalid(self, slug: str, cases: dict[str, dict[str, Any]]) -> None:
+        for name, actor_input in cases.items():
+            with self.subTest(case=name), self.assertRaises(invalid(slug)):
+                build(slug, {'prismcrawlApiKey': API_KEY, **actor_input})
+
+    def test_youtube_pagination_by_mode(self) -> None:
+        self.assertEqual(build('youtube', FULL_INPUTS['youtube'][0]).pagination.kind, 'token')
+        transcript = build('youtube', FULL_INPUTS['youtube'][3])
+        self.assertEqual((transcript.pagination.kind, transcript.max_pages), ('none', 1))
+        self.assert_invalid(
+            'youtube', {'search without query': {'mode': 'search'}, 'video without id': {'mode': 'video'}}
+        )
+
+    def test_walmart_review_sort_maps_to_sort(self) -> None:
+        reviews = build('walmart', FULL_INPUTS['walmart'][3])
+        self.assertEqual(reviews.body['sort'], 'helpful')
+        self.assertNotIn('reviewSort', reviews.body)
+        self.assertEqual((reviews.pagination.kind, reviews.pagination.param), ('page', 'page'))
+        self.assert_invalid(
+            'walmart',
+            {
+                'search without query or category': {'mode': 'search'},
+                'sellers without store': {'mode': 'sellers', 'id': '1'},
+            },
+        )
+
+    def test_ebay_seller_profile_is_one_page(self) -> None:
+        profile = build('ebay', {'mode': 'seller', 'id': 'second.sale', 'maxPages': 5})
+        self.assertEqual((profile.pagination.kind, profile.max_pages), ('none', 1))
+        self.assert_invalid(
+            'ebay',
+            {
+                'search without query or category': {'mode': 'search'},
+                'limit without inventory type': {'mode': 'seller', 'id': 'x', 'limit': 10},
+            },
+        )

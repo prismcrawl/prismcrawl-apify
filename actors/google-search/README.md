@@ -157,6 +157,7 @@ PrismCrawl's documented example response; live values vary.
                     "snippet": "Our favorite espresso machine is the Breville Bambino Plus.",
                     "domain": "seriouseats.com",
                     "favicon": "https://seriouseats.com/favicon.ico",
+                    "thumbnail": "https://images.example.com/espresso-machine.jpg",
                     "source_name": "Serious Eats",
                     "position": {
                         "absolute": 1
@@ -181,7 +182,8 @@ PrismCrawl's documented example response; live values vary.
                         {
                             "title": "Which espresso machine brand is most reliable?",
                             "text": "Which espresso machine brand is most reliable?",
-                            "link": null
+                            "link": null,
+                            "thumbnail": ""
                         }
                     ],
                     "links": [],

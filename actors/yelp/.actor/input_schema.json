@@ -72,14 +72,16 @@
                 "newest",
                 "oldest",
                 "highest_rating",
-                "lowest_rating"
+                "lowest_rating",
+                "elites"
             ],
             "enumTitles": [
                 "Recommended",
                 "Newest",
                 "Oldest",
                 "Highest rating",
-                "Lowest rating"
+                "Lowest rating",
+                "Elite reviewers first"
             ],
             "description": "For reviews: the order to return them in."
         },

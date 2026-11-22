@@ -133,6 +133,7 @@ PrismCrawl's documented example response; live values vary.
                     "snippet": "Independent reviews of leading espresso machines.",
                     "domain": "example.com",
                     "favicon": "https://example.com/favicon.ico",
+                    "thumbnail": "",
                     "source_name": "Example",
                     "position": {
                         "absolute": 1

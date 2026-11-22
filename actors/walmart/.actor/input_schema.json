@@ -1,0 +1,176 @@
+{
+    "$schema": "https://apify.com/schemas/v1/input.ide.json",
+    "title": "PrismCrawl Walmart API input",
+    "description": "Search Walmart products, get product details and seller offers, and collect product reviews through the PrismCrawl API as structured JSON. You need a PrismCrawl API key; each successful request uses one PrismCrawl credit, and failed requests are free.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "prismcrawlApiKey": {
+            "title": "PrismCrawl API key",
+            "type": "string",
+            "editor": "textfield",
+            "isSecret": true,
+            "description": "Your PrismCrawl API key, sent to PrismCrawl as the <code>x-api-key</code> header. Create or rotate it in the <a href=\"https://www.prismcrawl.com/\" target=\"_blank\">PrismCrawl dashboard</a>; new accounts get 100 free credits. The key is stored encrypted by Apify and is never logged or written to the dataset."
+        },
+        "mode": {
+            "title": "What to fetch",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "search",
+                "product",
+                "sellers",
+                "reviews"
+            ],
+            "enumTitles": [
+                "Search products",
+                "Product details",
+                "Seller offers",
+                "Product reviews"
+            ],
+            "description": "Choose what to fetch. Search uses <strong>Search query</strong>; the others use <strong>Product ID</strong>.",
+            "default": "search"
+        },
+        "query": {
+            "title": "Search query",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For search: text to search Walmart for.",
+            "prefill": "coffee maker"
+        },
+        "cat_id": {
+            "title": "Category path",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For search (US only): an underscore-separated Walmart category path. Can replace the query."
+        },
+        "sort": {
+            "title": "Search sort",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "price_low",
+                "price_high",
+                "best_seller",
+                "best_match",
+                "rating_high",
+                "new"
+            ],
+            "enumTitles": [
+                "Price: low to high",
+                "Price: high to low",
+                "Best sellers",
+                "Best match",
+                "Highest rated",
+                "Newest"
+            ],
+            "description": "For search: result order. Walmart Mexico supports price and best match only."
+        },
+        "min_price": {
+            "title": "Minimum price",
+            "type": "number",
+            "editor": "number",
+            "description": "For search.",
+            "minimum": 0
+        },
+        "max_price": {
+            "title": "Maximum price",
+            "type": "number",
+            "editor": "number",
+            "description": "For search.",
+            "minimum": 0
+        },
+        "id": {
+            "title": "Product ID",
+            "type": "string",
+            "editor": "textfield",
+            "description": "For details, sellers, and reviews: the product ID from search results."
+        },
+        "store_id": {
+            "title": "Store ID",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Walmart store for local availability and pricing. Required for seller offers."
+        },
+        "rating": {
+            "title": "Star rating",
+            "type": "integer",
+            "editor": "number",
+            "description": "For reviews: only return reviews with this rating (1–5).",
+            "minimum": 1,
+            "maximum": 5
+        },
+        "reviewSort": {
+            "title": "Review sort",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "relevancy",
+                "helpful",
+                "submission-desc",
+                "submission-asc",
+                "rating-desc",
+                "rating-asc"
+            ],
+            "enumTitles": [
+                "Most relevant",
+                "Most helpful",
+                "Newest",
+                "Oldest",
+                "Highest rating",
+                "Lowest rating"
+            ],
+            "description": "For reviews: the order to return them in."
+        },
+        "maxPages": {
+            "title": "Maximum pages",
+            "type": "integer",
+            "editor": "number",
+            "description": "How many pages to fetch (search and reviews only). The Actor stops early when PrismCrawl reports there is no next page. <strong>Each page is a separate PrismCrawl request and uses one credit.</strong>",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 1
+        },
+        "walmart_domain": {
+            "sectionCaption": "Marketplace",
+            "title": "Marketplace",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "walmart.com",
+                "walmart.com.mx"
+            ],
+            "enumTitles": [
+                "Walmart US (walmart.com)",
+                "Walmart Mexico (walmart.com.mx)"
+            ],
+            "description": "For search: Walmart US or Walmart Mexico. Defaults to walmart.com."
+        },
+        "device": {
+            "title": "Device",
+            "type": "string",
+            "editor": "select",
+            "enum": [
+                "desktop",
+                "mobile",
+                "tablet"
+            ],
+            "enumTitles": [
+                "Desktop",
+                "Mobile",
+                "Tablet"
+            ],
+            "description": "Device presentation used for the source request. Leave empty for the default."
+        },
+        "zero_trace": {
+            "sectionCaption": "Privacy",
+            "title": "Zero trace",
+            "type": "boolean",
+            "default": false,
+            "description": "When enabled, PrismCrawl does not store the source or parsed response for these requests; only audit and billing metadata is kept. Results still appear in this Actor's dataset."
+        }
+    },
+    "required": [
+        "prismcrawlApiKey"
+    ]
+}

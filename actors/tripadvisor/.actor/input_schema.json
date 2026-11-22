@@ -55,11 +55,15 @@
             "editor": "select",
             "enum": [
                 "recommended",
-                "newest"
+                "newest",
+                "most_recent",
+                "detailed_review"
             ],
             "enumTitles": [
                 "Recommended",
-                "Newest"
+                "Newest",
+                "Most recent",
+                "Detailed reviews first"
             ],
             "description": "For reviews: the order to return them in."
         },
