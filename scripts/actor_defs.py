@@ -283,6 +283,9 @@ class ActorDef:
     pagination_note: str = ''
     standby_note: str = ''
     related: list[str] = field(default_factory=list)
+    # Apify Store listing name and description; the README keeps `title`.
+    store_title: str = ''
+    store_description: str = ''
 
 
 def mode_select(values: list[str], titles: list[str], default: str, description: str) -> dict[str, Any]:
@@ -306,6 +309,12 @@ UDM_NAMES = {
 }
 GOOGLE_SEARCH = ActorDef(
     slug='google-search',
+    store_title='Google Search Results Scraper | PrismCrawl API',
+    store_description=(
+        'Get live Google search results as clean JSON: organic rankings, featured snippets, People also ask, '
+        'AI summaries, local and shopping results, and pagination. Search from any country, city, or '
+        'language. Uses your PrismCrawl API key, with 100 free credits and no card needed.'
+    ),
     name='prismcrawl-google-search-api',
     title='PrismCrawl Google Search API',
     description='Run live Google searches through the PrismCrawl API and receive normalized search results, SERP '
@@ -1892,6 +1901,12 @@ PRODUCTS_VIEW = table_view(
 _W = '/v1/walmart/search'
 WALMART = ActorDef(
     slug='walmart',
+    store_title='Walmart Product, Seller & Review Scraper | PrismCrawl API',
+    store_description=(
+        'Search Walmart and get product details, prices, availability, third-party seller offers, and '
+        'customer reviews as clean JSON. Track prices, compare sellers, and analyze reviews. Uses your '
+        'PrismCrawl API key, with 100 free credits and no card needed.'
+    ),
     name='prismcrawl-walmart-api',
     title='PrismCrawl Walmart API',
     description='Search Walmart products, get product details and seller offers, and collect product reviews '
