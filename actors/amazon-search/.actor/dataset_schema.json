@@ -59,7 +59,8 @@
                     "best_seller",
                     "delivery",
                     "url",
-                    "request_id"
+                    "request_id",
+                    "data"
                 ]
             },
             "display": {

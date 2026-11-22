@@ -59,7 +59,8 @@
                     "seller_name",
                     "availability",
                     "url",
-                    "request_id"
+                    "request_id",
+                    "data"
                 ]
             },
             "display": {
@@ -144,7 +145,8 @@
                     "language",
                     "helpful_votes",
                     "url",
-                    "request_id"
+                    "request_id",
+                    "data"
                 ]
             },
             "display": {

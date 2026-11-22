@@ -60,7 +60,8 @@
                     "open_state",
                     "google_maps_url",
                     "place_id",
-                    "request_id"
+                    "request_id",
+                    "data"
                 ]
             },
             "display": {

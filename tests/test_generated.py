@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import unittest
@@ -25,6 +26,16 @@ class GeneratedFilesTests(unittest.TestCase):
             with self.subTest(slug=slug):
                 self.assertTrue((ROOT / 'actors' / slug / 'my_actor' / 'endpoint.py').is_file())
                 self.assertTrue((ROOT / 'actors' / slug / '.actor' / 'actor.json').is_file())
+
+    def test_unwound_views_keep_the_field_they_unwind(self) -> None:
+        # Apify applies `fields` before `unwind`; dropping the unwound field leaves one row per page.
+        for slug in ACTOR_SLUGS:
+            schema = json.loads((ROOT / 'actors' / slug / '.actor' / 'dataset_schema.json').read_text())
+            for name, view in schema['views'].items():
+                transformation = view['transformation']
+                if transformation.get('unwind'):
+                    with self.subTest(slug=slug, view=name):
+                        self.assertIn(transformation['unwind'][0], transformation['fields'])
 
 
 if __name__ == '__main__':

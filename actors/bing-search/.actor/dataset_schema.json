@@ -56,7 +56,8 @@
                     "domain",
                     "source_name",
                     "favicon",
-                    "request_id"
+                    "request_id",
+                    "data"
                 ]
             },
             "display": {
@@ -127,7 +128,8 @@
                     "links",
                     "source_result_ids",
                     "confidence",
-                    "request_id"
+                    "request_id",
+                    "data"
                 ]
             },
             "display": {

@@ -156,7 +156,11 @@ def table_view(
     return {
         'title': title,
         'description': description,
-        'transformation': {'unwind': ['data', 'content', unwind], 'fields': [name for name, _, _ in columns]},
+        # Apify applies `fields` before `unwind`, so `data` must be kept or there is nothing to unwind.
+        'transformation': {
+            'unwind': ['data', 'content', unwind],
+            'fields': [*(name for name, _, _ in columns), 'data'],
+        },
         'display': {
             'component': 'table',
             'properties': {name: {'label': label, 'format': fmt} for name, label, fmt in columns},
